@@ -1,0 +1,196 @@
+/* Canvas pane: canvas, zoom controls, tool toolbar, empty state, toast. */
+
+.canvas-pane {
+    flex: 1;
+    position: relative;
+    background: #12141f;
+    overflow: hidden;
+}
+#canvas {
+    display: block;
+    cursor: crosshair;
+}
+#canvas:active { cursor: grabbing; }
+
+.canvas-info {
+    position: absolute;
+    top: 12px;
+    right: 16px;
+    font-size: 11px;
+    color: #3e4470;
+    pointer-events: none;
+}
+
+.controls {
+    position: absolute;
+    bottom: 16px;
+    right: 16px;
+    display: flex;
+    gap: 3px;
+}
+.controls button {
+    width: 34px;
+    height: 34px;
+    background: #1a1d30;
+    border: 1px solid #2a2d3e;
+    color: #7880b0;
+    font-size: 15px;
+    cursor: pointer;
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.15s;
+}
+.controls button:hover {
+    background: #22264a;
+    color: #c0c6e0;
+    border-color: #3a3f6e;
+}
+.controls .zoom-pct {
+    width: auto;
+    min-width: 48px;
+    padding: 0 8px;
+    font-size: 11px;
+    font-variant-numeric: tabular-nums;
+}
+
+.toolbar-container {
+    position: absolute;
+    top: 12px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    gap: 10px;
+    z-index: 10;
+}
+.toolbar {
+    display: flex;
+    gap: 2px;
+    background: #14172a;
+    border: 1px solid #2a2d3e;
+    border-radius: 9px;
+    padding: 3px;
+}
+.toolbar button {
+    width: 34px;
+    height: 34px;
+    background: transparent;
+    border: 1px solid transparent;
+    color: #7880b0;
+    font-size: 16px;
+    cursor: pointer;
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.15s;
+    padding: 0;
+}
+.toolbar button:hover {
+    background: #22264a;
+    color: #c0c6e0;
+}
+.toolbar button.active {
+    background: rgba(124, 92, 191, 0.15);
+    border-color: #7c5cbf;
+    color: #c0c6e0;
+    box-shadow: 0 0 8px rgba(124, 92, 191, 0.2);
+}
+.toolbar button svg {
+    width: 16px;
+    height: 16px;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 1.8;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+}
+
+.empty-state {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    text-align: center;
+    color: #2a2f50;
+    font-size: 14px;
+    pointer-events: none;
+    line-height: 2;
+}
+.empty-state .arrow { font-size: 28px; margin-bottom: 4px; }
+.empty-state .hint { font-size: 12px; }
+
+/* ── Template Cards (empty state) ──────────────────── */
+.empty-state .templates {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 10px;
+    margin-top: 18px;
+    pointer-events: auto;
+}
+.tpl-card {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+    padding: 12px 16px;
+    background: #161a2c;
+    border: 1px solid #2a2d3e;
+    border-radius: 8px;
+    cursor: pointer;
+    color: #7880b0;
+    font-size: 11.5px;
+    line-height: 1.4;
+    transition: all 0.15s;
+}
+.tpl-card:hover {
+    background: #1e2240;
+    border-color: #3a3f6e;
+    color: #c0c6e0;
+}
+.tpl-card .tpl-icons { display: flex; gap: 3px; }
+.tpl-card .tpl-icons img {
+    width: 28px;
+    height: 28px;
+    object-fit: contain;
+}
+
+/* ── Import Drop Target ────────────────────────────── */
+.canvas-pane.droptarget::after {
+    content: 'Drop to import';
+    position: absolute;
+    inset: 8px;
+    border: 2px dashed #7c5cbf;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+    color: #9b6dff;
+    background: rgba(124, 92, 191, 0.06);
+    pointer-events: none;
+    z-index: 40;
+}
+
+/* ── Toast ─────────────────────────────────────────── */
+.toast {
+    position: absolute;
+    bottom: 64px;
+    left: 50%;
+    transform: translateX(-50%) translateY(8px);
+    background: #1a1d30;
+    border: 1px solid #2a2d3e;
+    color: #c0c6e0;
+    font-size: 12px;
+    padding: 8px 14px;
+    border-radius: 8px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.2s, transform 0.2s;
+    z-index: 30;
+}
+.toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+.toast.error { border-color: rgba(248, 113, 113, 0.4); color: #f87171; }

@@ -1,0 +1,315 @@
+/* Editor pane: toolbar, CodeMirror purple-night theme, autocomplete, help footer. */
+
+.editor-pane {
+    width: 380px;
+    min-width: 260px;
+    max-width: 600px;
+    background: #1a1d2e;
+    border-right: 1px solid #2a2d3e;
+    display: flex;
+    flex-direction: column;
+}
+.editor-toolbar {
+    padding: 10px 16px;
+    background: #1e2136;
+    border-bottom: 1px solid #2a2d3e;
+    font-size: 11px;
+    color: #5a6190;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+.status { font-size: 11px; text-transform: none; letter-spacing: 0; }
+.status.ok { color: #4ade80; }
+.status.error { color: #f87171; }
+.status.empty { color: #5a6190; }
+.status.error { cursor: pointer; text-decoration: underline dotted; }
+
+/* ── Autotype Button ───────────────────────────────── */
+.autotype-btn {
+    width: 24px; height: 24px;
+    background: none;
+    border: 1px solid transparent;
+    color: #5a6190;
+    font-size: 13px;
+    cursor: pointer;
+    border-radius: 5px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.15s;
+    padding: 0;
+}
+.autotype-btn:hover {
+    background: #222640;
+    color: #c0c6e0;
+    border-color: #2a2d3e;
+}
+.autotype-btn.running {
+    color: #9b6dff;
+    animation: autotype-pulse 1s ease-in-out infinite;
+}
+@keyframes autotype-pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.4; }
+}
+
+/* ── CodeMirror Integration ──────────────────────────── */
+/* The raw textarea only paints until CodeMirror replaces it — match the
+   editor look so the pre-JS frame doesn't jump when the editor mounts. */
+#editor {
+    flex: 1 1 0;
+    background: #1a1d2e;
+    border: none;
+    outline: none;
+    resize: none;
+    color: #c0c6e0;
+    font-family: 'JetBrains Mono', 'Fira Code', 'Cascadia Code', 'Consolas', monospace;
+    font-size: 13px;
+    line-height: 1.75;
+    padding: 4px 8px 4px 34px;
+}
+#editor::placeholder { color: #555b80; }
+.editor-pane .CodeMirror {
+    flex: 1 1 0;
+    font-family: 'JetBrains Mono', 'Fira Code', 'Cascadia Code', 'Consolas', monospace;
+    font-size: 13px;
+    line-height: 1.75;
+    user-select: text;
+}
+
+/* ── Purple Night Theme ─────────────────────────────── */
+.cm-s-purple-night.CodeMirror {
+    background: #1a1d2e;
+    color: #c0c6e0;
+}
+.cm-s-purple-night .CodeMirror-gutters {
+    background: #161822;
+    border-right: 1px solid #2a2d3e;
+}
+.cm-s-purple-night .CodeMirror-linenumber {
+    color: #3a3f65;
+    padding: 0 8px;
+}
+.cm-s-purple-night .CodeMirror-cursor {
+    border-left: 2px solid #9b6dff;
+}
+.cm-s-purple-night div.CodeMirror-selected {
+    background: rgba(124, 92, 191, 0.25);
+}
+.cm-s-purple-night .CodeMirror-focused div.CodeMirror-selected {
+    background: rgba(124, 92, 191, 0.35);
+}
+.cm-s-purple-night .CodeMirror-activeline-background {
+    background: rgba(124, 92, 191, 0.06);
+}
+.cm-s-purple-night .cm-comment {
+    color: #555b80;
+    font-style: italic;
+}
+.cm-s-purple-night .cm-operator {
+    color: #b07dff;
+    font-weight: 700;
+}
+.cm-s-purple-night .cm-keyword {
+    color: #c78dff;
+}
+.cm-s-purple-night .cm-variable {
+    color: #7ec8e3;
+}
+.cm-s-purple-night .cm-punctuation {
+    color: #8060c0;
+}
+/* Line-background marks (theme-independent; light overrides in light.css) */
+.CodeMirror .cm-errorline-bg {
+    background: rgba(248, 113, 113, 0.07);
+}
+.CodeMirror .cm-nodeline-bg {
+    background: rgba(124, 92, 191, 0.10);
+}
+
+/* ── Purple Day Theme (light mode) ─────────────────── */
+.cm-s-purple-day.CodeMirror {
+    background: #ffffff;
+    color: #3a3e50;
+}
+.cm-s-purple-day .CodeMirror-gutters {
+    background: #f5f6fa;
+    border-right: 1px solid #e0e2ea;
+}
+.cm-s-purple-day .CodeMirror-linenumber {
+    color: #b8bccc;
+    padding: 0 8px;
+}
+.cm-s-purple-day .CodeMirror-cursor {
+    border-left: 2px solid #7c5cbf;
+}
+.cm-s-purple-day div.CodeMirror-selected {
+    background: rgba(124, 92, 191, 0.12);
+}
+.cm-s-purple-day .CodeMirror-focused div.CodeMirror-selected {
+    background: rgba(124, 92, 191, 0.18);
+}
+.cm-s-purple-day .CodeMirror-activeline-background {
+    background: rgba(124, 92, 191, 0.05);
+}
+.cm-s-purple-day .cm-comment {
+    color: #9aa0b8;
+    font-style: italic;
+}
+.cm-s-purple-day .cm-operator {
+    color: #7c3aed;
+    font-weight: 700;
+}
+.cm-s-purple-day .cm-keyword {
+    color: #8b5cf6;
+}
+.cm-s-purple-day .cm-variable {
+    color: #0e7490;
+}
+.cm-s-purple-day .cm-punctuation {
+    color: #7c5cbf;
+}
+.cm-s-purple-day .CodeMirror-scrollbar-filler,
+.cm-s-purple-day .CodeMirror-gutter-filler {
+    background: #ffffff;
+}
+
+/* Scrollbars */
+.cm-s-purple-night .CodeMirror-scrollbar-filler,
+.cm-s-purple-night .CodeMirror-gutter-filler {
+    background: #1a1d2e;
+}
+.editor-pane .CodeMirror-vscrollbar::-webkit-scrollbar,
+.editor-pane .CodeMirror-hscrollbar::-webkit-scrollbar {
+    width: 8px; height: 8px;
+}
+.editor-pane .CodeMirror-vscrollbar::-webkit-scrollbar-track,
+.editor-pane .CodeMirror-hscrollbar::-webkit-scrollbar-track {
+    background: #1a1d2e;
+}
+.editor-pane .CodeMirror-vscrollbar::-webkit-scrollbar-thumb,
+.editor-pane .CodeMirror-hscrollbar::-webkit-scrollbar-thumb {
+    background: #2a2d4e; border-radius: 4px;
+}
+.editor-pane .CodeMirror-vscrollbar::-webkit-scrollbar-thumb:hover,
+.editor-pane .CodeMirror-hscrollbar::-webkit-scrollbar-thumb:hover {
+    background: #3a3f6e;
+}
+
+/* Autocomplete dropdown */
+.CodeMirror-hints {
+    background: #1a1d2e;
+    border: 1px solid #2a2d3e;
+    border-radius: 6px;
+    padding: 4px 0;
+    font-family: 'JetBrains Mono', 'Fira Code', 'Cascadia Code', 'Consolas', monospace;
+    font-size: 12px;
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.5);
+    z-index: 100;
+}
+.CodeMirror-hint {
+    color: #c0c6e0;
+    padding: 4px 12px;
+    border-radius: 3px;
+    margin: 0 4px;
+    cursor: pointer;
+}
+.CodeMirror-hint-active {
+    background: rgba(124, 92, 191, 0.3);
+    color: #e0d4ff;
+}
+
+/* ── Help Footer ───────────────────────────────────── */
+.help {
+    padding: 6px 12px;
+    background: #161822;
+    border-top: 1px solid #2a2d3e;
+    font-size: 10px;
+    color: #3e4470;
+    line-height: 1.5;
+}
+.help code {
+    color: #7080c0;
+    background: #1e2136;
+    padding: 0 4px;
+    border-radius: 3px;
+    font-family: inherit;
+}
+.help .types {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 3px;
+    margin-top: 3px;
+}
+.help .badge {
+    background: #222640;
+    color: #7880b0;
+    padding: 1px 6px;
+    border-radius: 8px;
+    font-size: 9px;
+}
+.help .keys { margin-top: 3px; }
+.help kbd {
+    background: #1e2136;
+    border: 1px solid #2a2d3e;
+    border-bottom-width: 2px;
+    border-radius: 3px;
+    padding: 0 4px;
+    font-family: inherit;
+    font-size: 9px;
+    color: #7080c0;
+}
+
+/* ── Mock Ad Slot ──────────────────────────────────── */
+/* Visual placeholder for a Google AdSense unit (large-banner scale) —
+   no ad script is loaded. */
+.ad-slot {
+    padding: 12px 14px 14px;
+    min-height: 96px;
+    background: #12141d;
+    border-top: 1px solid #2a2d3e;
+    font-family: Arial, 'Segoe UI', system-ui, sans-serif;
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+.ad-slot .ad-top {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 4px;
+}
+.ad-slot .ad-chip {
+    border: 1px solid #4a4f7a;
+    color: #9aa0c8;
+    font-size: 10px;
+    font-weight: 700;
+    line-height: 1;
+    padding: 2px 4px;
+    border-radius: 2px;
+}
+.ad-slot .ad-url {
+    color: #81c995;
+    font-size: 12px;
+}
+.ad-slot .ad-info {
+    margin-left: auto;
+    color: #4a4f7a;
+    font-size: 13px;
+}
+.ad-slot .ad-title {
+    color: #8ab4f8;
+    font-size: 15px;
+    line-height: 1.35;
+}
+.ad-slot:hover .ad-title { text-decoration: underline; }
+.ad-slot .ad-desc {
+    color: #7880b0;
+    font-size: 12px;
+    line-height: 1.45;
+    margin-top: 3px;
+}

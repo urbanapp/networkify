@@ -1,0 +1,144 @@
+/* Reset, app shell: header, export menu, split layout, resizer. */
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+    font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+    background: #0f1117;
+    color: #e0e0e0;
+    height: 100vh;
+    overflow: hidden;
+    user-select: none;
+}
+
+/* ── Header ─────────────────────────────────────────── */
+.header {
+    height: 48px;
+    background: #161822;
+    border-bottom: 1px solid #2a2d3e;
+    display: flex;
+    align-items: center;
+    padding: 0 16px;
+    gap: 10px;
+}
+
+/* Brand block — mirrors the landing page (landing.html) */
+.header-logo {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    text-decoration: none;
+    flex-shrink: 0;
+}
+.header-logo .logo-icon {
+    width: 26px; height: 26px;
+    border-radius: 7px;
+    background: linear-gradient(135deg, #9b6dff, #6d4aff);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 2px 10px rgba(155, 109, 255, 0.3);
+}
+.header-logo h1 {
+    font-size: 16px;
+    font-weight: 800;
+    color: #eaeaf0;
+    letter-spacing: -0.02em;
+}
+.header-tagline {
+    margin-left: 4px;
+    padding-left: 14px;
+    border-left: 1px solid #2a2d3e;
+    font-size: 12px;
+    color: #5a6190;
+    letter-spacing: 0.2px;
+    white-space: nowrap;
+}
+@media (max-width: 900px) {
+    .header-tagline { display: none; }
+}
+
+.header-spacer { flex: 1; }
+.header-btn {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 14px;
+    background: #1e2136;
+    border: 1px solid #2a2d3e;
+    color: #7880b0;
+    font-family: inherit;
+    font-size: 12px;
+    border-radius: 999px;
+    cursor: pointer;
+    transition: all 0.15s;
+}
+.header-btn:hover {
+    background: #22264a;
+    color: #c0c6e0;
+    border-color: #3a3f6e;
+}
+.header-btn svg { flex-shrink: 0; }
+
+/* Primary header action (Export) — landing-page accent button */
+.header-btn.primary {
+    background: linear-gradient(135deg, #9b6dff 0%, #6d4aff 100%);
+    border-color: transparent;
+    color: #fff;
+    font-weight: 600;
+    box-shadow: 0 2px 10px rgba(109, 74, 255, 0.35);
+}
+.header-btn.primary:hover {
+    background: linear-gradient(135deg, #a87fff 0%, #7c5cff 100%);
+    border-color: transparent;
+    color: #fff;
+    box-shadow: 0 3px 16px rgba(109, 74, 255, 0.5);
+}
+.export-wrapper { position: relative; }
+.export-menu {
+    display: none;
+    position: absolute;
+    top: calc(100% + 6px);
+    right: 0;
+    background: #1a1d2e;
+    border: 1px solid #2a2d3e;
+    border-radius: 8px;
+    padding: 4px;
+    min-width: 160px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+    z-index: 100;
+}
+.export-menu.open { display: block; }
+.export-menu button {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    width: 100%;
+    padding: 8px 12px;
+    background: none;
+    border: none;
+    color: #c0c6e0;
+    font-family: inherit;
+    font-size: 12px;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background 0.12s;
+}
+.export-menu button:hover {
+    background: rgba(124, 92, 191, 0.15);
+}
+.export-menu button svg { flex-shrink: 0; color: #7880b0; }
+
+/* ── Main Split Layout ──────────────────────────────── */
+.main { display: flex; height: calc(100vh - 48px); }
+
+/* ── Resize Handle ──────────────────────────────────── */
+.resizer {
+    width: 5px;
+    cursor: col-resize;
+    background: transparent;
+    transition: background 0.15s;
+}
+.resizer:hover, .resizer.active {
+    background: rgba(124, 92, 191, 0.5);
+}

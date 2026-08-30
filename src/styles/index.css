@@ -1,0 +1,12 @@
+/* Aggregates all stylesheets in cascade order — `light.css` must come last
+   because it overrides the dark defaults. Loaded via <link> in index.html
+   (not through main.js) so the first paint is styled — no FOUC on refresh.
+   CodeMirror base styles come first so our theme overrides win. */
+@import 'codemirror/lib/codemirror.css';
+@import 'codemirror/addon/hint/show-hint.css';
+@import './base.css';
+@import './editor.css';
+@import './canvas.css';
+@import './drawer.css';
+@import './modal.css';
+@import './light.css';
