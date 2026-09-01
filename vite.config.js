@@ -8,7 +8,7 @@ export default defineConfig({
             // Two pages: landing at /, editor at /app/
             input: {
                 landing: 'index.html',
-                app: 'app/index.html',
+                editor: 'editor/index.html',
             },
         },
     },

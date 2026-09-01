@@ -2,7 +2,7 @@
 
 A browser-based isometric network topology editor. Define networks using a simple text DSL and see them rendered as interactive isometric diagrams.
 
-**Live at [networkify.app](https://networkify.app)** (editor: [networkify.app/app/](https://networkify.app/app/)) — fully static, runs entirely in your browser, nothing leaves your machine.
+**Live at [networkify.app](https://networkify.app)** (editor: [networkify.app/editor/](https://networkify.app/editor/)) — fully static, runs entirely in your browser, nothing leaves your machine.
 
 ## Development
 
@@ -15,7 +15,7 @@ Built with [Vite](https://vitejs.dev) and vanilla JavaScript ES modules — no f
 
 ```
 index.html             marketing landing page (self-contained)
-app/index.html         editor page shell
+editor/index.html      editor page shell
 src/
   main.js              entry point — wires all modules together
   config.js            shared constants (node types, grid metrics, default DSL)

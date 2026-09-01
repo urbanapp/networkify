@@ -4,7 +4,7 @@
 An isometric network topology editor. Users define network diagrams using a text-based DSL in an editor pane (CodeMirror), and the app renders an interactive isometric visualization on an HTML5 canvas.
 
 ## Architecture
-- **Vite + vanilla JS ES modules** — no framework. Two pages: `index.html` is the static marketing landing (self-contained, inline CSS/JS), `app/index.html` is the editor's slim shell; all editor logic lives in `src/`.
+- **Vite + vanilla JS ES modules** — no framework. Two pages: `index.html` is the static marketing landing (self-contained, inline CSS/JS), `editor/index.html` is the editor's slim shell; all editor logic lives in `src/`.
 - **Dependencies** (npm, bundled): CodeMirror 5 (editor, simple mode, active-line, show-hint), Vite (dev).
 - **Assets**: Isometric PNG icons in `src/assets/icons/` named `{type}-isometric.png`, imported as URLs via `src/icons.js`.
 
@@ -42,7 +42,7 @@ Node types: `server`, `database`, `cloud`, `switch`, `router`, `firewall`, `lapt
 
 ## Deployment
 - Open source (MIT), repo: `github.com/urbanapp/networkify`.
-- GitHub Actions (`.github/workflows/deploy.yml`) builds and deploys to GitHub Pages on every push to `main` → custom domain `networkify.app` (DNS: Cloudflare; the github.io URL 301s here). Landing: `networkify.app/`, editor: `networkify.app/app/`. SEO files: `public/robots.txt`, `public/sitemap.xml`; landing images in `public/landing-img/`.
+- GitHub Actions (`.github/workflows/deploy.yml`) builds and deploys to GitHub Pages on every push to `main` → custom domain `networkify.app` (DNS: Cloudflare; the github.io URL 301s here). Landing: `networkify.app/`, editor: `networkify.app/editor/`. SEO files: `public/robots.txt`, `public/sitemap.xml`; landing images in `public/landing-img/`.
 - Env flags are set in the workflow (`VITE_ADS: '0'` — flip to `'1'` to show the ad slot).
 
 ## Conventions
@@ -51,4 +51,4 @@ Node types: `server`, `database`, `cloud`, `switch`, `router`, `firewall`, `lapt
 - Section headers use box-drawing comment style: `/* ── Section ──── */` in CSS, `/* ═══ Section ═══ */` in JS
 - CSS is split by concern in `src/styles/` (`base`, `editor`, `canvas`, `drawer`, `light`); light-theme overrides live only in `light.css` and must load last
 - Dark purple theme: background `#0f1117`/`#1a1d2e`, accent `#9b6dff`/`#7c5cbf`, text `#c0c6e0`
-- The editor defaults to dark; light is opt-in only (saved `iso-theme` — no OS-preference fallback, mirrored by the pre-paint script in `app/index.html`)
+- The editor defaults to dark; light is opt-in only (saved `iso-theme` — no OS-preference fallback, mirrored by the pre-paint script in `editor/index.html`)
