@@ -52,12 +52,12 @@ const themes = {
     }
 };
 
-/* Explicit user choice wins; otherwise follow the OS colour scheme */
+/* Explicit user choice wins; otherwise default to dark */
 function initialTheme() {
     let saved = null;
     try { saved = localStorage.getItem('iso-theme'); } catch (e) { /* storage unavailable */ }
     if (saved === 'dark' || saved === 'light') return saved;
-    return matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark';
+    return 'dark';
 }
 
 export let currentTheme = initialTheme();

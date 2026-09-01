@@ -3,303 +3,1257 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Isometric network topology editor — define network diagrams with a simple text DSL and render them as interactive isometric visualizations.">
-    <meta name="theme-color" content="#0f1117">
-    <meta property="og:title" content="networkify — Isometric Network Editor">
-    <meta property="og:description" content="Define network diagrams with a simple text DSL, rendered as interactive isometric visualizations.">
     <title>networkify — Isometric Network Editor</title>
+
+    <!-- SEO Meta -->
+    <meta name="description" content="Design beautiful isometric network topologies with a simple text-based DSL. Free, open source, zero setup — runs entirely in your browser.">
+    <meta name="keywords" content="network topology, isometric diagram, network editor, DSL, topology as code, network visualization, open source">
+    <meta name="author" content="networkify">
+    <meta name="robots" content="index, follow">
+    <link rel="canonical" href="https://networkify.app/">
+
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://networkify.app/">
+    <meta property="og:title" content="networkify — Design Network Topologies in Isometric 3D">
+    <meta property="og:description" content="Write a simple text DSL and get a beautiful, interactive isometric network diagram instantly. Free, open source, no install required.">
+    <meta property="og:image" content="https://networkify.app/landing-img/og-image.jpg">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
+    <meta property="og:image:alt" content="networkify — isometric network topology editor with a text DSL pane and rendered diagram">
+    <meta property="og:locale" content="en_US">
+    <meta property="og:site_name" content="networkify">
+
+    <!-- Twitter -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:url" content="https://networkify.app/">
+    <meta name="twitter:title" content="networkify — Design Network Topologies in Isometric 3D">
+    <meta name="twitter:description" content="Write a simple text DSL and get a beautiful, interactive isometric network diagram instantly. Free, open source, no install required.">
+    <meta name="twitter:image" content="https://networkify.app/landing-img/og-image.jpg">
+    <meta name="twitter:image:alt" content="networkify — isometric network topology editor">
+
+    <!-- Theme color -->
+    <meta name="theme-color" content="#0e0a1e">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+
     <link rel="icon" type="image/png" href="favicon.png">
-    <link rel="stylesheet" href="/src/styles/index.css">
+    <link rel="preload" as="image" href="landing-img/hero.jpg" fetchpriority="high">
+
+    <!-- Structured data -->
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "SoftwareApplication",
+        "name": "networkify",
+        "url": "https://networkify.app/",
+        "applicationCategory": "DeveloperApplication",
+        "operatingSystem": "Any (runs in the browser)",
+        "description": "Design beautiful isometric network topologies with a simple text-based DSL. Free, open source, zero setup — runs entirely in your browser.",
+        "image": "https://networkify.app/landing-img/og-image.jpg",
+        "screenshot": "https://networkify.app/landing-img/og-image.jpg",
+        "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" },
+        "license": "https://github.com/urbanapp/networkify/blob/main/LICENSE",
+        "sameAs": ["https://github.com/urbanapp/networkify"]
+    }
+    </script>
+    <style>
+        /* ── Reset ─────────────────────────────────────────── */
+        *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+        :root {
+            --bg-base: #0e0a1e;
+            --bg-surface: #14102a;
+            --bg-card: #191432;
+            --bg-elevated: #1f1a3e;
+            --border: #2a2450;
+            --border-hover: #3f3670;
+            --accent: #9b6dff;
+            --accent-dim: #7c5cbf;
+            --accent-bright: #b898ff;
+            --accent-glow: rgba(155, 109, 255, 0.3);
+            --text: #eaeaf0;
+            --text-dim: #c0bdd8;
+            --text-muted: #8882aa;
+            --text-faint: #5c5680;
+            --code-comment: #5a5480;
+            --code-operator: #b07dff;
+            --code-type: #c78dff;
+            --code-name: #7ec8e3;
+        }
+
+        html { scroll-behavior: smooth; scroll-padding-top: 80px; }
+
+        body {
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            background: var(--bg-base);
+            color: var(--text);
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        a { color: inherit; text-decoration: none; }
+
+        .container {
+            max-width: 1220px;
+            margin: 0 auto;
+            padding: 0 28px;
+        }
+
+        /* ── Buttons ───────────────────────────────────────── */
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            font-family: inherit;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            border: none;
+            white-space: nowrap;
+            text-decoration: none;
+        }
+        .btn svg { width: 16px; height: 16px; transition: transform 0.2s; }
+        .btn:hover svg { transform: translateX(3px); }
+
+        .btn-primary {
+            padding: 13px 30px;
+            font-size: 15px;
+            border-radius: 12px;
+            background: linear-gradient(135deg, #9b6dff 0%, #6d4aff 100%);
+            color: #fff;
+            box-shadow: 0 4px 24px rgba(109, 74, 255, 0.35);
+        }
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 36px rgba(109, 74, 255, 0.5);
+        }
+
+        .btn-ghost {
+            padding: 13px 30px;
+            font-size: 15px;
+            border-radius: 12px;
+            background: rgba(25, 20, 50, 0.5);
+            backdrop-filter: blur(8px);
+            color: var(--text-dim);
+            border: 1px solid var(--border);
+        }
+        .btn-ghost:hover {
+            background: var(--bg-elevated);
+            border-color: var(--border-hover);
+            color: #fff;
+        }
+
+        .btn-sm { padding: 9px 20px; font-size: 13px; border-radius: 10px; }
+
+        .btn-header {
+            padding: 9px 24px;
+            font-size: 13.5px;
+            border-radius: 999px;
+            background: linear-gradient(135deg, #9b6dff 0%, #6d4aff 100%);
+            color: #fff;
+            box-shadow: 0 2px 14px rgba(109, 74, 255, 0.35);
+        }
+        .btn-header:hover {
+            box-shadow: 0 4px 22px rgba(109, 74, 255, 0.55);
+            transform: translateY(-1px);
+        }
+
+        /* ── Header ────────────────────────────────────────── */
+        .header {
+            position: fixed;
+            top: 0; left: 0; right: 0;
+            z-index: 100;
+            height: 64px;
+            background: rgba(14, 10, 30, 0.5);
+            backdrop-filter: blur(24px);
+            -webkit-backdrop-filter: blur(24px);
+            border-bottom: 1px solid rgba(42, 36, 80, 0.3);
+        }
+
+        .header .container {
+            display: flex;
+            align-items: center;
+            height: 100%;
+        }
+
+        .header-logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex-shrink: 0;
+        }
+
+        .header-logo .logo-icon {
+            width: 26px; height: 26px;
+            border-radius: 7px;
+            background: linear-gradient(135deg, #9b6dff, #6d4aff);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 2px 10px var(--accent-glow);
+        }
+
+        .header-logo span {
+            font-size: 16px;
+            font-weight: 800;
+            color: #fff;
+            letter-spacing: -0.02em;
+        }
+
+        .header-nav {
+            display: flex;
+            align-items: center;
+            gap: 32px;
+            margin: 0 auto;
+        }
+
+        .header-nav a {
+            font-size: 13.5px;
+            color: var(--text-muted);
+            transition: color 0.15s;
+            font-weight: 500;
+        }
+        .header-nav a:hover { color: #fff; }
+
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .header-hamburger {
+            display: none;
+            width: 36px; height: 36px;
+            align-items: center;
+            justify-content: center;
+            background: none;
+            border: none;
+            cursor: pointer;
+            color: var(--text-muted);
+        }
+        .header-hamburger:hover { color: #fff; }
+
+        /* ── Hero ──────────────────────────────────────────── */
+        .hero {
+            position: relative;
+            padding: 150px 0 80px;
+            overflow: hidden;
+            min-height: 100vh;
+        }
+
+        /* Background image */
+        .hero-bg {
+            position: absolute;
+            inset: 0;
+            z-index: 0;
+        }
+
+        .hero-bg img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            object-position: 60% 50%;
+            opacity: 0.85;
+        }
+
+        .hero-bg::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background:
+                linear-gradient(to right, var(--bg-base) 0%, rgba(14, 10, 30, 0.75) 30%, rgba(14, 10, 30, 0.15) 55%, transparent 75%),
+                linear-gradient(to bottom, rgba(14, 10, 30, 0.6) 0%, rgba(14, 10, 30, 0.15) 15%, transparent 40%, transparent 80%, var(--bg-base) 100%);
+        }
+
+        .hero .container {
+            position: relative;
+            z-index: 1;
+        }
+
+        /* Top portion: left-aligned text */
+        .hero-top {
+            max-width: 560px;
+            margin-bottom: 56px;
+        }
+
+        .hero-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 5px 14px 5px 8px;
+            border-radius: 999px;
+            background: rgba(155, 109, 255, 0.08);
+            border: 1px solid rgba(155, 109, 255, 0.16);
+            font-size: 12.5px;
+            font-weight: 600;
+            color: var(--accent-bright);
+            margin-bottom: 24px;
+        }
+
+        .hero-badge .dot {
+            width: 7px; height: 7px;
+            border-radius: 50%;
+            background: #4ade80;
+            box-shadow: 0 0 6px rgba(74, 222, 128, 0.5);
+            animation: blink 2.5s ease-in-out infinite;
+        }
+
+        @keyframes blink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.4; }
+        }
+
+        .hero-title {
+            font-size: clamp(36px, 5vw, 58px);
+            font-weight: 800;
+            line-height: 1.08;
+            letter-spacing: -0.035em;
+            margin-bottom: 20px;
+        }
+
+        .hero-title .gradient {
+            background: linear-gradient(135deg, #d4bbff 0%, #9b6dff 50%, #6d4aff 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .hero-sub {
+            font-size: clamp(15px, 1.6vw, 17px);
+            color: var(--text-muted);
+            line-height: 1.7;
+            margin-bottom: 32px;
+        }
+
+        .hero-cta {
+            display: flex;
+            gap: 14px;
+            flex-wrap: wrap;
+        }
+
+        /* Bottom portion: code + visual split */
+        .hero-split {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 24px;
+            align-items: stretch;
+        }
+
+        /* ── Code Panel ────────────────────────────────────── */
+        .code-panel {
+            background: rgba(25, 20, 50, 0.65);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 24px 64px rgba(0, 0, 0, 0.45);
+        }
+
+        .code-titlebar {
+            height: 38px;
+            background: rgba(20, 16, 42, 0.8);
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            padding: 0 14px;
+            gap: 7px;
+            flex-shrink: 0;
+        }
+
+        .code-titlebar .td { width: 10px; height: 10px; border-radius: 50%; }
+        .code-titlebar .td:nth-child(1) { background: #ff5f57; }
+        .code-titlebar .td:nth-child(2) { background: #febc2e; }
+        .code-titlebar .td:nth-child(3) { background: #28c840; }
+
+        .code-titlebar .filename {
+            margin-left: auto;
+            font-size: 11px;
+            color: var(--text-faint);
+            font-family: 'JetBrains Mono', 'Fira Code', monospace;
+        }
+
+        .code-body {
+            flex: 1;
+            display: flex;
+            overflow: hidden;
+        }
+
+        .code-gutter {
+            padding: 18px 0;
+            width: 40px;
+            background: rgba(20, 16, 42, 0.6);
+            border-right: 1px solid var(--border);
+            text-align: right;
+            flex-shrink: 0;
+        }
+
+        .code-gutter span {
+            display: block;
+            padding: 0 8px;
+            font-family: 'JetBrains Mono', 'Fira Code', monospace;
+            font-size: 11.5px;
+            line-height: 1.85;
+            color: var(--text-faint);
+            opacity: 0.45;
+        }
+
+        .code-content {
+            flex: 1;
+            padding: 18px 18px;
+            overflow-x: auto;
+        }
+
+        .code-content pre {
+            font-family: 'JetBrains Mono', 'Fira Code', 'Cascadia Code', monospace;
+            font-size: 12.5px;
+            line-height: 1.85;
+            color: var(--text-dim);
+        }
+
+        .code-content .c { color: var(--code-comment); font-style: italic; }
+        .code-content .o { color: var(--code-operator); font-weight: 700; }
+        .code-content .t { color: var(--code-type); }
+        .code-content .n { color: var(--code-name); }
+
+        .code-content .cursor {
+            display: inline-block;
+            width: 2px; height: 15px;
+            background: var(--accent);
+            vertical-align: text-bottom;
+            margin-left: 2px;
+            animation: cursor-blink 1s step-end infinite;
+        }
+
+        @keyframes cursor-blink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0; }
+        }
+
+        .code-status {
+            height: 30px;
+            background: rgba(20, 16, 42, 0.8);
+            border-top: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            padding: 0 14px;
+            gap: 14px;
+            flex-shrink: 0;
+        }
+
+        .code-status span {
+            font-size: 10.5px;
+            color: var(--text-faint);
+            font-family: 'JetBrains Mono', 'Fira Code', monospace;
+        }
+
+        .code-status .ok { color: #4ade80; }
+
+        /* ── Visual Panel ──────────────────────────────────── */
+        .visual-panel {
+            position: relative;
+            border-radius: 16px;
+            overflow: hidden;
+            border: 1px solid var(--border);
+            box-shadow: 0 24px 64px rgba(0, 0, 0, 0.45);
+        }
+
+        .visual-panel img {
+            display: block;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .visual-panel-label {
+            position: absolute;
+            top: 12px; left: 12px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            padding: 5px 12px;
+            border-radius: 8px;
+            background: rgba(14, 10, 30, 0.7);
+            backdrop-filter: blur(8px);
+            border: 1px solid rgba(42, 36, 80, 0.5);
+            font-size: 10.5px;
+            font-weight: 600;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.6px;
+        }
+
+        .visual-panel-label .live-dot {
+            width: 6px; height: 6px;
+            border-radius: 50%;
+            background: #4ade80;
+            box-shadow: 0 0 6px rgba(74, 222, 128, 0.5);
+        }
+
+        /* ── Section commons ───────────────────────────────── */
+        .section-label {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 11.5px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1.8px;
+            color: var(--accent);
+            margin-bottom: 14px;
+        }
+
+        .section-label::before {
+            content: '';
+            width: 18px; height: 2px;
+            background: var(--accent);
+            border-radius: 1px;
+        }
+
+        .section-title {
+            font-size: clamp(28px, 3.5vw, 40px);
+            font-weight: 800;
+            letter-spacing: -0.025em;
+            line-height: 1.15;
+            margin-bottom: 14px;
+        }
+
+        .section-desc {
+            font-size: 16px;
+            color: var(--text-muted);
+            max-width: 520px;
+            line-height: 1.7;
+        }
+
+        .divider {
+            height: 1px;
+            background: linear-gradient(to right, transparent, var(--border), transparent);
+            margin: 80px auto;
+            max-width: 800px;
+        }
+
+        /* ── Features ──────────────────────────────────────── */
+        .features { padding: 40px 0 100px; }
+
+        .features-header {
+            text-align: center;
+            margin-bottom: 56px;
+        }
+
+        .features-header .section-desc { margin: 0 auto; }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+        }
+
+        .feature-card {
+            padding: 28px;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            transition: all 0.25s ease;
+        }
+
+        .feature-card:hover {
+            border-color: var(--border-hover);
+            transform: translateY(-3px);
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.25);
+        }
+
+        .feature-icon {
+            width: 42px; height: 42px;
+            border-radius: 10px;
+            background: rgba(155, 109, 255, 0.08);
+            border: 1px solid rgba(155, 109, 255, 0.12);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 18px;
+            color: var(--accent);
+        }
+
+        .feature-card h3 { font-size: 16px; font-weight: 700; margin-bottom: 8px; }
+        .feature-card p { font-size: 13.5px; color: var(--text-muted); line-height: 1.65; }
+
+        /* ── Showcase ──────────────────────────────────────── */
+        .showcase { padding: 0 0 100px; }
+
+        .showcase-header {
+            text-align: center;
+            margin-bottom: 48px;
+        }
+
+        .showcase-header .section-desc { margin: 0 auto; }
+
+        .showcase-frame {
+            border-radius: 16px;
+            overflow: hidden;
+            border: 1px solid var(--border);
+            box-shadow: 0 32px 80px rgba(0, 0, 0, 0.5), 0 0 60px rgba(155, 109, 255, 0.04);
+        }
+
+        .showcase-bar {
+            height: 36px;
+            background: var(--bg-surface);
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            padding: 0 14px;
+            gap: 7px;
+        }
+
+        .showcase-bar .td { width: 10px; height: 10px; border-radius: 50%; }
+        .showcase-bar .td:nth-child(1) { background: #ff5f57; }
+        .showcase-bar .td:nth-child(2) { background: #febc2e; }
+        .showcase-bar .td:nth-child(3) { background: #28c840; }
+
+        .showcase-frame img,
+        .showcase-frame video { display: block; width: 100%; height: auto; }
+
+        /* ── Theme Switcher ─────────────────────────────────── */
+        .theme-switch { padding: 0 0 100px; }
+
+        .theme-switch-header {
+            text-align: center;
+            margin-bottom: 24px;
+        }
+
+        .theme-switch-header .section-desc { margin: 0 auto; }
+
+        /* Toggle sits between header and frame */
+        .theme-toggle {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 32px;
+        }
+
+        .theme-toggle-track {
+            display: flex;
+            border-radius: 12px;
+            padding: 4px;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+        }
+
+        .theme-toggle-btn {
+            display: flex;
+            align-items: center;
+            gap: 7px;
+            padding: 9px 22px;
+            font-family: inherit;
+            font-size: 13px;
+            font-weight: 600;
+            border: none;
+            border-radius: 9px;
+            cursor: pointer;
+            transition: all 0.25s ease;
+            color: var(--text-muted);
+            background: transparent;
+        }
+
+        .theme-toggle-btn svg { width: 15px; height: 15px; flex-shrink: 0; }
+
+        .theme-toggle-btn.active {
+            color: #fff;
+            background: var(--accent);
+            box-shadow: 0 2px 12px rgba(109, 74, 255, 0.35);
+        }
+
+        .theme-toggle-btn:not(.active):hover {
+            color: var(--text-dim);
+            background: var(--bg-elevated);
+        }
+
+        /* Frame holds images + caption */
+        .theme-switch-frame {
+            position: relative;
+            border-radius: 16px;
+            overflow: hidden;
+            border: 1px solid var(--border);
+            box-shadow: 0 24px 64px rgba(0, 0, 0, 0.4);
+            transition: border-color 0.4s ease;
+        }
+
+        .theme-switch-frame.is-light { border-color: #d0cce0; }
+
+        /* Image stack: both images absolutely positioned inside a sized container */
+        .theme-switch-images {
+            position: relative;
+            line-height: 0;
+            overflow: hidden;
+        }
+
+        .theme-switch-images img {
+            display: block;
+            width: 100%;
+            height: auto;
+        }
+
+        /* Dark is in flow (sets the height), light overlays it */
+        .theme-switch-images .img-light {
+            position: absolute;
+            top: 0; left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            opacity: 0;
+            transition: opacity 0.5s ease;
+        }
+
+        .theme-switch-images .img-dark {
+            transition: opacity 0.5s ease;
+        }
+
+        .theme-switch-frame.is-light .img-dark { opacity: 0; }
+        .theme-switch-frame.is-light .img-light { opacity: 1; }
+
+        /* Caption strip */
+        .theme-switch-caption {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 16px 20px;
+            background: var(--bg-surface);
+            border-top: 1px solid var(--border);
+            transition: all 0.4s ease;
+        }
+
+        .theme-switch-frame.is-light .theme-switch-caption {
+            background: #f0eef5;
+            border-top-color: #d0cce0;
+        }
+
+        .theme-caption-text h3 {
+            font-size: 14px;
+            font-weight: 700;
+            margin-bottom: 2px;
+            transition: color 0.4s ease;
+        }
+
+        .theme-switch-frame.is-light .theme-caption-text h3 { color: #1a1530; }
+
+        .theme-caption-text p {
+            font-size: 12.5px;
+            color: var(--text-muted);
+            transition: color 0.4s ease;
+        }
+
+        .theme-switch-frame.is-light .theme-caption-text p { color: #6b6590; }
+
+        .theme-caption-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            padding: 5px 12px;
+            border-radius: 999px;
+            font-size: 11px;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+            transition: all 0.4s ease;
+            background: rgba(155, 109, 255, 0.1);
+            border: 1px solid rgba(155, 109, 255, 0.15);
+            color: var(--accent-bright);
+        }
+
+        .theme-switch-frame.is-light .theme-caption-badge {
+            background: rgba(109, 74, 255, 0.08);
+            border-color: rgba(109, 74, 255, 0.18);
+            color: #6d4aff;
+        }
+
+        /* ── CTA ───────────────────────────────────────────── */
+        .cta {
+            padding: 100px 0;
+            text-align: center;
+            position: relative;
+        }
+
+        .cta::before {
+            content: '';
+            position: absolute;
+            top: 50%; left: 50%;
+            width: 700px; height: 400px;
+            transform: translate(-50%, -50%);
+            background: radial-gradient(ellipse, rgba(109, 74, 255, 0.06) 0%, transparent 70%);
+            pointer-events: none;
+        }
+
+        .cta .container { position: relative; z-index: 1; }
+        .cta .section-title { max-width: 500px; margin: 0 auto 14px; }
+        .cta .section-desc { margin: 0 auto 36px; max-width: 440px; }
+
+        .cta-actions {
+            display: flex;
+            gap: 14px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        /* ── Footer ────────────────────────────────────────── */
+        .footer {
+            padding: 64px 0 0;
+            border-top: 1px solid var(--border);
+        }
+
+        .footer-top {
+            display: grid;
+            grid-template-columns: 1.5fr 1fr 1fr 1fr;
+            gap: 48px;
+            padding-bottom: 48px;
+        }
+
+        .footer-brand {
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+        }
+
+        .footer-brand-logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .footer-brand-logo .logo-icon {
+            width: 22px; height: 22px;
+            border-radius: 6px;
+            background: linear-gradient(135deg, #9b6dff, #6d4aff);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 2px 8px var(--accent-glow);
+        }
+
+        .footer-brand-logo span {
+            font-size: 15px;
+            font-weight: 700;
+            color: var(--text);
+        }
+
+        .footer-brand p {
+            font-size: 13px;
+            color: var(--text-muted);
+            line-height: 1.65;
+            max-width: 260px;
+        }
+
+        .footer-col h4 {
+            font-size: 11.5px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1.4px;
+            color: var(--text-dim);
+            margin-bottom: 16px;
+        }
+
+        .footer-col ul { list-style: none; }
+        .footer-col li { margin-bottom: 10px; }
+        .footer-col a {
+            font-size: 13.5px;
+            color: var(--text-muted);
+            transition: color 0.15s;
+        }
+        .footer-col a:hover { color: #fff; }
+
+        .footer-bottom {
+            border-top: 1px solid var(--border);
+            padding: 20px 0;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .footer-copy {
+            font-size: 12.5px;
+            color: var(--text-faint);
+        }
+
+        .footer-bottom-links { display: flex; gap: 20px; }
+        .footer-bottom-links a { font-size: 12.5px; color: var(--text-faint); transition: color 0.15s; }
+        .footer-bottom-links a:hover { color: var(--text-dim); }
+
+        /* ── Responsive ────────────────────────────────────── */
+        @media (max-width: 960px) {
+            .hero-split { grid-template-columns: 1fr; }
+            .features-grid { grid-template-columns: 1fr; max-width: 440px; margin: 0 auto; }
+            .theme-toggle-btn { padding: 7px 12px; font-size: 11.5px; }
+            .header-nav { display: none; }
+            .header-hamburger { display: flex; }
+            .hero-bg img { object-position: center; opacity: 0.4; }
+            .hero-bg::after {
+                background:
+                    linear-gradient(to right, var(--bg-base) 0%, rgba(14, 10, 30, 0.6) 50%, rgba(14, 10, 30, 0.4) 100%),
+                    linear-gradient(to bottom, rgba(14, 10, 30, 0.4) 0%, transparent 20%, transparent 80%, var(--bg-base) 100%);
+            }
+            .hero-top { max-width: 100%; }
+        }
+
+        @media (max-width: 600px) {
+            .hero { padding: 120px 0 60px; min-height: auto; }
+            .hero-cta { flex-direction: column; align-items: flex-start; }
+            .footer-top { grid-template-columns: 1fr 1fr; gap: 32px; }
+            .footer-brand { grid-column: 1 / -1; }
+            .footer-bottom { flex-direction: column; gap: 10px; text-align: center; }
+        }
+
+        /* ── Animations ────────────────────────────────────── */
+        .reveal {
+            opacity: 0;
+            transform: translateY(28px);
+            transition: opacity 0.6s ease, transform 0.6s ease;
+        }
+
+        .reveal.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .reveal-d1 { transition-delay: 0.12s; }
+        .reveal-d2 { transition-delay: 0.24s; }
+    </style>
 </head>
 <body>
-    <script>
-        /* Pre-paint theme: mirror theme.js's initialTheme() so a saved/OS light
-           preference applies before the module graph loads (no dark flash). */
-        try {
-            var t = localStorage.getItem('iso-theme');
-            if (t === 'light' || (t !== 'dark' && matchMedia('(prefers-color-scheme: light)').matches)) {
-                document.body.classList.add('light');
-            }
-        } catch (e) { /* storage unavailable — keep dark default */ }
-    </script>
-    <div class="header">
-        <a href="landing.html" class="header-logo" title="networkify — home">
+
+<!-- ═══ Header ═══ -->
+<header class="header">
+    <div class="container">
+        <a href="#" class="header-logo">
             <div class="logo-icon">
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="5" r="2"/><circle cx="5" cy="19" r="2"/><circle cx="19" cy="19" r="2"/><path d="M12 7v4l-7 8"/><path d="M12 11l7 8"/></svg>
             </div>
-            <h1>networkify</h1>
+            <span>networkify</span>
         </a>
-        <span class="header-tagline">Isometric Network Editor</span>
-        <div class="header-spacer"></div>
-        <button id="templatesBtn" class="header-btn" title="Load a starter template">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="9" y1="21" x2="9" y2="9"/></svg>
-            Templates
-        </button>
-        <button id="shareBtn" class="header-btn" title="Copy a shareable link to this diagram">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
-            Share
-        </button>
-        <button id="importBtn" class="header-btn" title="Import a diagram (JSON or DSL file)">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
-            Import
-        </button>
-        <div class="export-wrapper">
-            <button id="exportBtn" class="header-btn primary" title="Export diagram">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-                Export
+        <nav class="header-nav">
+            <a href="#features">Features</a>
+            <a href="#showcase">Showcase</a>
+            <a href="#gallery">Gallery</a>
+            <a href="#cta">Get Started</a>
+        </nav>
+        <div class="header-right">
+            <a href="app/" class="btn btn-header">
+                Launch Editor
+                <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+            </a>
+            <button class="header-hamburger" aria-label="Menu">
+                <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
             </button>
-            <div id="exportMenu" class="export-menu">
-                <button data-format="png">
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
-                    PNG Image
+        </div>
+    </div>
+</header>
+
+<!-- ═══ Hero ═══ -->
+<section class="hero">
+    <div class="hero-bg">
+        <img src="landing-img/hero.jpg" alt="" loading="eager" fetchpriority="high" width="1536" height="1024">
+    </div>
+    <div class="container">
+
+        <!-- Left-aligned headline + CTA -->
+        <div class="hero-top reveal">
+            <div class="hero-badge">
+                <span class="dot"></span>
+                Free &amp; open source
+            </div>
+            <h1 class="hero-title">Design Network<br>Topologies <span class="gradient">in&nbsp;Isometric&nbsp;3D</span></h1>
+            <p class="hero-sub">
+                Write a simple text DSL — get a beautiful, interactive isometric network diagram instantly. No sign-up, no install, runs entirely in your browser.
+            </p>
+            <div class="hero-cta">
+                <a href="app/" class="btn btn-primary">
+                    Open the Editor
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+                </a>
+                <a href="#features" class="btn btn-ghost">See How It Works</a>
+            </div>
+        </div>
+
+        <!-- Code editor + live preview split -->
+        <div class="hero-split">
+            <div class="code-panel reveal reveal-d1">
+                <div class="code-titlebar">
+                    <div class="td"></div>
+                    <div class="td"></div>
+                    <div class="td"></div>
+                    <span class="filename">topology.netdsl</span>
+                </div>
+                <div class="code-body">
+                    <div class="code-gutter">
+                        <span>1</span><span>2</span><span>3</span><span>4</span><span>5</span><span>6</span><span>7</span><span>8</span><span>9</span><span>10</span><span>11</span><span>12</span><span>13</span><span>14</span><span>15</span>
+                    </div>
+                    <div class="code-content">
+                        <pre><span class="c"># Define your network topology</span>
+<span class="c"># Nodes auto-detect type from suffix</span>
+
+<span class="n">users</span><span class="t">:user</span> <span class="o">---</span> <span class="n">loadbalancer</span><span class="t">:switch</span>
+
+<span class="n">loadbalancer</span> <span class="o">---</span> <span class="n">web-01</span><span class="t">:server</span>
+<span class="n">loadbalancer</span> <span class="o">---</span> <span class="n">web-02</span><span class="t">:server</span>
+
+<span class="n">web-01</span> <span class="o">---</span> <span class="n">db-primary</span><span class="t">:database</span>
+<span class="n">web-02</span> <span class="o">---</span> <span class="n">db-replica</span><span class="t">:database</span>
+
+<span class="n">web-01</span> <span class="o">---</span> <span class="n">fw-main</span><span class="t">:firewall</span>
+<span class="n">fw-main</span> <span class="o">---</span> <span class="n">cloud-api</span><span class="t">:cloud</span>
+
+<span class="n">admin</span><span class="t">:laptop</span> <span class="o">---</span> <span class="n">fw-main</span><span class="cursor"></span></pre>
+                    </div>
+                </div>
+                <div class="code-status">
+                    <span class="ok">&#10003; 8 nodes</span>
+                    <span class="ok">&#10003; 7 edges</span>
+                    <span>netdsl</span>
+                </div>
+            </div>
+
+            <div class="visual-panel reveal reveal-d2">
+                <div class="visual-panel-label">
+                    <span class="live-dot"></span>
+                    Live Preview
+                </div>
+                <img src="landing-img/network-diagram-dark.png" alt="Live-rendered isometric network topology" loading="lazy" width="2480" height="1730">
+            </div>
+        </div>
+
+    </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- ═══ Features ═══ -->
+<section class="features" id="features">
+    <div class="container">
+        <div class="features-header reveal">
+            <div class="section-label">Features</div>
+            <h2 class="section-title">Everything you need to map your network</h2>
+            <p class="section-desc">Purpose-built for network engineers, architects, and anyone who thinks in topologies.</p>
+        </div>
+        <div class="features-grid">
+            <div class="feature-card reveal">
+                <div class="feature-icon">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
+                </div>
+                <h3>Text-Based DSL</h3>
+                <p>Clean, readable syntax. Type <code style="color:var(--code-operator)">server --- database</code> and see it render instantly.</p>
+            </div>
+            <div class="feature-card reveal">
+                <div class="feature-icon">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
+                </div>
+                <h3>Isometric 3D</h3>
+                <p>Auto-layout on an isometric grid with animated edge connections and crisp hand-crafted icons.</p>
+            </div>
+            <div class="feature-card reveal">
+                <div class="feature-icon">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 3h6v6"/><path d="M10 14 21 3"/><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/></svg>
+                </div>
+                <h3>Interactive Canvas</h3>
+                <p>Pan, zoom, drag nodes, marquee-select. Right-click to add new nodes directly on the diagram.</p>
+            </div>
+            <div class="feature-card reveal">
+                <div class="feature-icon">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                </div>
+                <h3>Export Anywhere</h3>
+                <p>Export as PNG, SVG, or copy the DSL text to version-control your topology as code.</p>
+            </div>
+            <div class="feature-card reveal">
+                <div class="feature-icon">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M12 1v6"/><path d="M12 17v6"/><path d="m5.6 5.6 4.25 4.25"/><path d="m14.15 14.15 4.25 4.25"/><path d="M1 12h6"/><path d="M17 12h6"/></svg>
+                </div>
+                <h3>7 Node Types</h3>
+                <p>Server, database, cloud, switch, firewall, laptop, user — each with an isometric icon.</p>
+            </div>
+            <div class="feature-card reveal">
+                <div class="feature-icon">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"/><polyline points="13 2 13 9 20 9"/></svg>
+                </div>
+                <h3>Zero Setup</h3>
+                <p>One HTML file. No install, no build tools, no accounts. Open in any browser and go.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- ═══ Showcase ═══ -->
+<section class="showcase" id="showcase">
+    <div class="container">
+        <div class="showcase-header reveal">
+            <div class="section-label">Showcase</div>
+            <h2 class="section-title">The full editor experience</h2>
+            <p class="section-desc">Code on the left, live isometric canvas on the right. Edit properties in the node drawer.</p>
+        </div>
+        <div class="showcase-frame reveal">
+            <div class="showcase-bar">
+                <div class="td"></div>
+                <div class="td"></div>
+                <div class="td"></div>
+            </div>
+            <video src="landing-img/screen.mp4" autoplay loop muted playsinline></video>
+        </div>
+    </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- ═══ Theme Switcher ═══ -->
+<section class="theme-switch" id="gallery">
+    <div class="container">
+        <div class="theme-switch-header reveal">
+            <div class="section-label">Export Themes</div>
+            <h2 class="section-title">One diagram, two looks</h2>
+            <p class="section-desc">Switch between dark and light exports. Click to preview each theme in real time.</p>
+        </div>
+        <div class="theme-toggle reveal">
+            <div class="theme-toggle-track" id="themeSwitcher">
+                <button class="theme-toggle-btn active" data-theme="dark">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/></svg>
+                    Dark
                 </button>
-                <button data-format="svg">
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/><polyline points="2 12 12 17 22 12"/></svg>
-                    SVG Vector
-                </button>
-                <button data-format="json">
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
-                    JSON Data
+                <button class="theme-toggle-btn" data-theme="light">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="m4.93 4.93 1.41 1.41"/><path d="m17.66 17.66 1.41 1.41"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="m6.34 17.66-1.41 1.41"/><path d="m19.07 4.93-1.41 1.41"/></svg>
+                    Light
                 </button>
             </div>
         </div>
-        <button id="helpBtn" class="header-btn" title="Help — DSL reference &amp; shortcuts (?)">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
-            Help
-        </button>
-    </div>
-    <input type="file" id="importFile" accept=".json,.txt,.xml,.dot,.gv,application/json,text/plain,text/xml" style="display:none">
-
-    <div class="main">
-        <div class="editor-pane" id="editorPane">
-            <div class="editor-toolbar">
-                <span>Topology</span>
-                <span style="flex:1"></span>
-                <button id="autotypeBtn" class="autotype-btn" title="Autotype demo">
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="4 17 10 11 4 5"/><line x1="12" y1="19" x2="20" y2="19"/></svg>
-                </button>
-                <span id="status" class="status empty">Ready</span>
+        <div class="theme-switch-frame reveal" id="themeFrame">
+            <div class="theme-switch-images">
+                <img class="img-dark" src="landing-img/network-diagram-dark.png" alt="Network diagram — dark theme" loading="lazy" width="2480" height="1730">
+                <img class="img-light" src="landing-img/network-diagram-light.png" alt="Network diagram — light theme" loading="lazy" width="2480" height="1730">
             </div>
-            <textarea id="editor" spellcheck="false" placeholder="Define network topology...&#10;&#10;name:type --- name:type&#10;&#10;Example:&#10;web-01:server --- db:database"></textarea>
-            <div class="help">
-                <div><code>name:type --- name:type</code> &middot; <code>#</code> comment</div>
-                <div class="types">
-                    <span class="badge">server</span>
-                    <span class="badge">database</span>
-                    <span class="badge">cloud</span>
-                    <span class="badge">switch</span>
-                    <span class="badge">router</span>
-                    <span class="badge">firewall</span>
-                    <span class="badge">laptop</span>
-                    <span class="badge">user</span>
+            <div class="theme-switch-caption">
+                <div class="theme-caption-text">
+                    <h3 id="themeCapTitle">Dark Theme</h3>
+                    <p id="themeCapDesc">Ideal for slide decks, dashboards, and dark-mode documentation.</p>
                 </div>
-                <div class="keys">
-                    <kbd>V</kbd> select &middot; <kbd>H</kbd> hand &middot; <kbd>M</kbd> marquee &middot; <kbd>L</kbd> link &middot;
-                    <kbd>Space</kbd> pan &middot; <kbd>F</kbd> fit &middot; <kbd>T</kbd> tidy &middot; <kbd>&#9003;</kbd> delete
-                </div>
-            </div>
-            <!-- Ad slot (bottom-left) is injected by src/ui/adslot.js when VITE_ADS=1 -->
-        </div>
-
-        <div class="resizer" id="resizer"></div>
-
-        <div class="canvas-pane">
-            <canvas id="canvas"></canvas>
-            <div class="toolbar-container">
-                <div class="toolbar" id="toolbar">
-                    <button id="toolHand" title="Hand — pan the grid (H)">
-                        <svg viewBox="0 0 24 24"><path d="M18 12.5V10a1 1 0 0 0-2 0V4a1 1 0 0 0-2 0v6a1 1 0 0 0-2 0V3a1 1 0 0 0-2 0v8.5L7.5 9a1.26 1.26 0 0 0-1.78 0 1.26 1.26 0 0 0 0 1.78L11 18a4 4 0 0 0 4 2h1a5 5 0 0 0 5-5v-2a1 1 0 0 0-2 0" fill="none"/></svg>
-                    </button>
-                    <button id="toolSelect" class="active" title="Select — click nodes, right-click empty space to create (V)">
-                        <svg viewBox="0 0 24 24"><path d="M4 4l7.07 17 2.51-7.39L21 11.07z"/></svg>
-                    </button>
-                    <button id="toolGroupSelect" title="Group select — marquee select nodes (M)">
-                        <svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="1" stroke-dasharray="4 3"/></svg>
-                    </button>
-                    <button id="toolLink" title="Link — drag between nodes to connect (L). Tip: right-drag from a node works in any tool">
-                        <svg viewBox="0 0 24 24"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
-                    </button>
-                </div>
-                <div class="toolbar toolbar-utils">
-                    <button id="tidyBtn" title="Tidy layout — re-run auto-layout (T)">
-                        <svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
-                    </button>
-                    <button id="settingsToggle" title="Settings">
-                        <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
-                    </button>
-                    <button id="themeToggle" title="Toggle light/dark theme">
-                        <svg id="themeIconMoon" viewBox="0 0 24 24"><path d="M21 12.79A9 9 0 1 1 11.21 3a7 7 0 0 0 9.79 9.79z"/></svg>
-                        <svg id="themeIconSun" viewBox="0 0 24 24" style="display:none"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
-                    </button>
-                </div>
-            </div>
-            <div id="emptyState" class="empty-state">
-                <div class="arrow">&#8592;</div>
-                Define your network in the editor<br>
-                <span class="hint">or right-click / double-click the canvas to add a node</span>
-                <div id="emptyTemplates" class="templates"></div>
-            </div>
-            <div id="info" class="canvas-info"></div>
-            <div id="toast" class="toast"></div>
-            <div class="controls">
-                <button id="zoomOut" title="Zoom out (&minus;)">&minus;</button>
-                <button id="zoomPct" class="zoom-pct" title="Reset zoom to 100%">100%</button>
-                <button id="zoomIn" title="Zoom in (+)">+</button>
-                <button id="zoomFit" title="Fit diagram (F)">&#9974;</button>
-            </div>
-
-            <div id="nodeDrawer" class="node-drawer">
-                <div class="drawer-header">
-                    <img id="drawerIcon" class="drawer-icon" src="" alt="">
-                    <h2>Edit Node</h2>
-                    <button id="drawerClose" class="drawer-close" title="Close">&times;</button>
-                </div>
-                <div class="drawer-body">
-                    <div class="drawer-field">
-                        <label>Name</label>
-                        <input id="drawerName" type="text" spellcheck="false" autocomplete="off">
-                    </div>
-                    <div class="drawer-field">
-                        <label>Type</label>
-                        <div id="drawerType" class="type-grid"></div>
-                    </div>
-                    <div class="drawer-field">
-                        <label>Connections</label>
-                        <div id="drawerConns" class="drawer-conns"></div>
-                    </div>
-                </div>
-                <div class="drawer-footer">
-                    <button id="drawerReset" class="btn-reset">Reset Position</button>
-                    <button id="drawerDelete" class="btn-delete">Delete Node</button>
-                </div>
-            </div>
-
-            <div id="settingsDrawer" class="node-drawer">
-                <div class="drawer-header">
-                    <svg style="width:20px;height:20px;fill:none;stroke:#7880b0;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
-                    <h2>Settings</h2>
-                    <button id="settingsClose" class="drawer-close" title="Close">&times;</button>
-                </div>
-                <div class="drawer-body">
-                    <div class="drawer-field">
-                        <label>Grid</label>
-                        <label class="setting-toggle"><input type="checkbox" id="settingGrid" checked><span>Show grid lines</span></label>
-                    </div>
-                    <div class="drawer-field">
-                        <label>Snap to Grid</label>
-                        <label class="setting-toggle"><input type="checkbox" id="settingSnap" checked><span>Snap nodes on drop</span></label>
-                    </div>
-                    <div class="drawer-field">
-                        <label>Animations</label>
-                        <label class="setting-toggle"><input type="checkbox" id="settingAnim" checked><span>Animated edge flow</span></label>
-                    </div>
-                    <div class="drawer-field">
-                        <label>Diagram</label>
-                        <button id="settingResetDemo" class="btn-reset">Reset to demo topology</button>
-                    </div>
-                </div>
+                <span class="theme-caption-badge" id="themeCapBadge">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                    PNG &middot; SVG
+                </span>
             </div>
         </div>
     </div>
+</section>
 
-    <!-- ═══ Dialogs ═══ -->
-    <div id="templatesModal" class="modal-overlay">
-        <div class="modal">
-            <div class="modal-header">
-                <svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="9" y1="21" x2="9" y2="9"/></svg>
-                <h2>Templates</h2>
-                <button class="modal-close" title="Close">&times;</button>
-            </div>
-            <div class="modal-body">
-                <p class="modal-hint">Start from a ready-made topology. Loading replaces the current diagram &mdash; one Cmd/Ctrl+Z brings it back.</p>
-                <div id="templatesGrid" class="modal-tpl-grid"></div>
-            </div>
+<div class="divider"></div>
+
+<!-- ═══ CTA ═══ -->
+<section class="cta" id="cta">
+    <div class="container reveal">
+        <div class="section-label">Get Started</div>
+        <h2 class="section-title">Ready to map your network?</h2>
+        <p class="section-desc">Jump straight in — no setup, no account, just start designing.</p>
+        <div class="cta-actions">
+            <a href="app/" class="btn btn-primary">
+                Launch the Editor
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+            </a>
+            <a href="#features" class="btn btn-ghost">Explore Features</a>
         </div>
     </div>
+</section>
 
-    <div id="importModal" class="modal-overlay">
-        <div class="modal">
-            <div class="modal-header">
-                <svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
-                <h2>Import</h2>
-                <button class="modal-close" title="Close">&times;</button>
-            </div>
-            <div class="modal-body">
-                <div id="importDropzone" class="import-dropzone">
-                    <span id="importFileLabel">Drop a file here, or</span>
-                    <button id="importChooseBtn" class="modal-btn">Choose file&hellip;</button>
-                </div>
-                <div class="modal-field-label">Format</div>
-                <div id="importFormats" class="import-formats"></div>
-                <div id="importStatus" class="import-status"></div>
-            </div>
-            <div class="modal-footer">
-                <button id="importCancelBtn" class="modal-btn">Cancel</button>
-                <button id="importConfirmBtn" class="modal-btn primary" disabled>Import</button>
-            </div>
-        </div>
-    </div>
-
-    <div id="helpModal" class="modal-overlay">
-        <div class="modal modal-wide">
-            <div class="modal-header">
-                <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
-                <h2>Help</h2>
-                <button class="modal-close" title="Close">&times;</button>
-            </div>
-            <div class="modal-body help-body">
-                <section>
-                    <h3>The DSL</h3>
-                    <p>Each line of the editor describes a node or a connection; the diagram re-renders as you type.</p>
-                    <pre class="help-code"># comments start with # or //
-web-01:server                  # a standalone node
-web-01 --- db-main:database    # a connection (creates both nodes)
-cache                          # type omitted &rarr; server</pre>
-                    <ul>
-                        <li>The type after <code>:</code> is optional and defaults to <code>server</code>.</li>
-                        <li>A node may appear on many lines &mdash; the last explicit type wins, duplicate connections are merged.</li>
-                        <li>Avoid <code>:</code> and <code>---</code> inside names; dots and dashes are fine (<code>10.0.0.1</code>, <code>web-01</code>).</li>
-                    </ul>
-                </section>
-                <section>
-                    <h3>Node types</h3>
-                    <div id="helpTypes" class="help-types"></div>
-                </section>
-                <section>
-                    <h3>Tools &amp; keyboard</h3>
-                    <div class="help-grid">
-                        <div><kbd>V</kbd> Select &mdash; click, drag nodes, <kbd>Shift</kbd>+click multi-select</div>
-                        <div><kbd>H</kbd> Hand &mdash; pan the grid (<kbd>Space</kbd> holds it temporarily)</div>
-                        <div><kbd>M</kbd> Marquee &mdash; rectangle select</div>
-                        <div><kbd>L</kbd> Link &mdash; drag between nodes to connect</div>
-                        <div><kbd>F</kbd> Fit diagram &middot; <kbd>T</kbd> Tidy layout</div>
-                        <div><kbd>+</kbd>/<kbd>&minus;</kbd> Zoom &middot; <kbd>0</kbd> 100%</div>
-                        <div><kbd>&#9003;</kbd> Delete selected nodes</div>
-                        <div><kbd>Esc</kbd> Cancel link / close panels &middot; <kbd>Cmd/Ctrl+Z</kbd> Undo</div>
+<!-- ═══ Footer ═══ -->
+<footer class="footer">
+    <div class="container">
+        <div class="footer-top">
+            <div class="footer-brand">
+                <div class="footer-brand-logo">
+                    <div class="logo-icon">
+                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="5" r="2"/><circle cx="5" cy="19" r="2"/><circle cx="19" cy="19" r="2"/><path d="M12 7v4l-7 8"/><path d="M12 11l7 8"/></svg>
                     </div>
-                </section>
-                <section>
-                    <h3>Mouse</h3>
-                    <ul>
-                        <li>Wheel zooms around the cursor; <strong>middle-button drag pans</strong> with any tool.</li>
-                        <li>Right-click or double-click an empty cell to <strong>create a node</strong>.</li>
-                        <li><strong>Right-drag from a node</strong> onto another to link them (works with any tool); <kbd>Alt</kbd>+drag does the same in Select.</li>
-                        <li>Click a node to edit it in the drawer &mdash; rename, retype, remove connections.</li>
-                    </ul>
-                </section>
-                <section>
-                    <h3>Import, export &amp; share</h3>
-                    <ul>
-                        <li><strong>Import</strong> accepts nmap/masscan XML scans, Graphviz DOT (including <code>terraform graph</code> output), networkify JSON exports, and plain DSL text.</li>
-                        <li>Drop a file anywhere on the canvas &mdash; the import dialog opens with the format detected.</li>
-                        <li><strong>Export</strong> renders PNG or SVG, or saves JSON (diagram + layout) that you can re-import later.</li>
-                        <li><strong>Share</strong> copies a link with the whole diagram encoded in the URL; your work also autosaves locally.</li>
-                    </ul>
-                </section>
+                    <span>networkify</span>
+                </div>
+                <p>Design beautiful isometric network topologies with a simple text-based DSL. Free, open source, zero setup.</p>
+            </div>
+            <div class="footer-col">
+                <h4>Product</h4>
+                <ul>
+                    <li><a href="app/">Editor</a></li>
+                    <li><a href="#features">Features</a></li>
+                    <li><a href="#showcase">Showcase</a></li>
+                    <li><a href="https://github.com/urbanapp/networkify/releases">Changelog</a></li>
+                </ul>
+            </div>
+            <div class="footer-col">
+                <h4>Resources</h4>
+                <ul>
+                    <li><a href="https://github.com/urbanapp/networkify#readme">Documentation</a></li>
+                    <li><a href="https://github.com/urbanapp/networkify#dsl-syntax">DSL Reference</a></li>
+                    <li><a href="#">Examples</a></li>
+                    <li><a href="#">Blog</a></li>
+                </ul>
+            </div>
+            <div class="footer-col">
+                <h4>Community</h4>
+                <ul>
+                    <li><a href="https://github.com/urbanapp/networkify">GitHub</a></li>
+                    <li><a href="https://github.com/urbanapp/networkify/discussions">Discussions</a></li>
+                    <li><a href="https://github.com/urbanapp/networkify/contribute">Contributing</a></li>
+                    <li><a href="https://github.com/urbanapp/networkify/blob/main/LICENSE">License</a></li>
+                </ul>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <span class="footer-copy">&copy; 2026 networkify. All rights reserved.</span>
+            <div class="footer-bottom-links">
+                <a href="#">Privacy</a>
+                <a href="#">Terms</a>
             </div>
         </div>
     </div>
+</footer>
 
-    <script type="module" src="/src/main.js"></script>
+<script>
+/* ═══ Scroll reveal ═══ */
+(function () {
+    var els = document.querySelectorAll('.reveal');
+    if (!els.length) return;
+    var io = new IntersectionObserver(function (entries) {
+        entries.forEach(function (e) {
+            if (e.isIntersecting) {
+                e.target.classList.add('visible');
+                io.unobserve(e.target);
+            }
+        });
+    }, { threshold: 0.08 });
+    els.forEach(function (el) { io.observe(el); });
+})();
+
+/* ═══ Theme switcher ═══ */
+(function () {
+    var track = document.getElementById('themeSwitcher');
+    var frame = document.getElementById('themeFrame');
+    if (!track || !frame) return;
+    var btns = track.querySelectorAll('.theme-toggle-btn');
+    var title = document.getElementById('themeCapTitle');
+    var desc = document.getElementById('themeCapDesc');
+    var captions = {
+        dark: { title: 'Dark Theme', desc: 'Ideal for slide decks, dashboards, and dark-mode documentation.' },
+        light: { title: 'Light Theme', desc: 'Clean and print-friendly for reports, wikis, and whiteboards.' }
+    };
+    btns.forEach(function (btn) {
+        btn.addEventListener('click', function () {
+            var theme = btn.getAttribute('data-theme');
+            btns.forEach(function (b) { b.classList.remove('active'); });
+            btn.classList.add('active');
+            if (theme === 'light') {
+                frame.classList.add('is-light');
+            } else {
+                frame.classList.remove('is-light');
+            }
+            title.textContent = captions[theme].title;
+            desc.textContent = captions[theme].desc;
+        });
+    });
+})();
+</script>
+
 </body>
 </html>
